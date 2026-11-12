@@ -11,8 +11,5 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck"
-  },
-  "dependencies": {
-    "pnpm": "^12.15.0"
   }
 }

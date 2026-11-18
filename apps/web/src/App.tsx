@@ -33,6 +33,7 @@ import './workspace/layout.css';
 import { TEXT_COLORS } from './theme.js';
 import { StepWorkBox } from './components/StepWorkBox.js';
 import { SummarySlot } from './components/StepSummary.js';
+import { StepActionsSlot } from './components/StepActions.js';
 import { loadWorkCollapsed, saveWorkCollapsed } from './workspace/workCollapsed.js';
 
 function StepContent({ index, label }: { index: number; label: string }) {
@@ -83,6 +84,7 @@ export function App() {
   const [active, setActive] = useState(0);
   const [notice, setNotice] = useState<ProjectNotice | undefined>();
   const [summarySlot, setSummarySlot] = useState<HTMLElement | null>(null);
+  const [actionsSlot, setActionsSlot] = useState<HTMLElement | null>(null);
   // The side column (Tasks and Summary) collapses in one go, remembered for the viewer.
   const [sideCollapsed, setSideCollapsed] = useState(loadWorkCollapsed);
   const toggleSide = () => {
@@ -196,12 +198,16 @@ export function App() {
 
         {current && (
           <Box data-testid="workspace-section" data-section={current.id}>
-            <Title order={2}>
-              {active + 1}. {current.label}
-            </Title>
+            <Group justify="space-between" gap="sm" wrap="nowrap" align="center">
+              <Title order={2}>
+                {active + 1}. {current.label}
+              </Title>
+              <div ref={setActionsSlot} data-testid="step-actions" />
+            </Group>
             <Text c="dimmed" size="sm">
               {current.description}
             </Text>
+            <StepActionsSlot.Provider value={actionsSlot}>
             <SummarySlot.Provider value={{ element: summarySlot, collapsed: sideCollapsed }}>
             <div className="step-layout">
               <div className="step-layout-main">
@@ -252,6 +258,7 @@ export function App() {
               )}
             </div>
             </SummarySlot.Provider>
+            </StepActionsSlot.Provider>
           </Box>
         )}
       </AppShell.Main>

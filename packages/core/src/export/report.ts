@@ -1,12 +1,13 @@
 import type { ProjectFeature } from '../akeneo/features.js';
 import type { AkeneoAttribute, AkeneoDependency, AkeneoRule, GenerateIssue } from '../akeneo/types.js';
-import { featureRecordAttributes, isRecordValueAllowed, isRecordValueSkipped, type SourceEntityPlan } from '../akeneo/sourceEntities.js';
+import { featureRecordAttributes, type SourceEntityPlan } from '../akeneo/sourceEntities.js';
 import { formatAction, ruleConditions } from '../akeneo/ruleText.js';
-import { classRecordAttribute, sourceEntityFor, sourceRecordAttribute } from '../akeneo/sourceRecords.js';
+import { sourceEntityFor, sourceRecordAttribute } from '../akeneo/sourceRecords.js';
 import { labelFor } from '../etim/labels.js';
 import type { EtimRelease } from '../etim/types.js';
 import { mappingStatus } from '../project/sources.js';
 import type { Project } from '../project/types.js';
+import { sourceRecordsSheet } from './stepSheets.js';
 import type { Table } from './table.js';
 
 export interface ReportInput {
@@ -35,8 +36,6 @@ export function reportTables(input: ReportInput): Table[] {
   const statusOf = (key: string) => mappingStatus(project.features[key]);
   const mapped = features.filter((f) => statusOf(f.key) === 'mapped').length;
   const skipped = features.filter((f) => statusOf(f.key) === 'skipped').length;
-  const valueText = (id: string | undefined) => (id ? labelFor(release.values[id]?.labels ?? {}, locale) : '');
-  const featureText = (id: string) => labelFor(release.features[id]?.labels ?? {}, locale);
   const plannedByKey = new Map(sourceEntities.flatMap((e) => e.features.map((f) => [f.key, { entity: e.code, feature: f }] as const)));
   const sourceRecords = sourceEntities.reduce((n, e) => n + e.records.length, 0);
   const recordValues = sourceEntities.reduce((n, e) => n + e.records.length * e.features.length, 0);
@@ -193,64 +192,7 @@ export function reportTables(input: ReportInput): Table[] {
     ],
   };
 
-  // One row per record and feature, then a row per class value of that feature, as filled by the 07 record files.
-  const recordSheet: Table = {
-    name: 'Source records',
-    rows: [
-      [
-        'Reference entity',
-        'Record',
-        ...project.locales.map((l) => `Label ${l}`),
-        'Feature',
-        'Feature label',
-        'Class',
-        'ETIM value',
-        'Value label',
-        'Record attribute',
-        'Status',
-      ],
-      ...sourceEntities.flatMap((e) =>
-        e.records.flatMap((r) =>
-          e.features.flatMap((f) => {
-            const row = (classId: string | undefined, valueId: string | undefined, status: string) => [
-              e.code,
-              r.code,
-              ...project.locales.map((l) => r.labels[l]),
-              f.featureId,
-              featureText(f.featureId),
-              classId,
-              valueId,
-              valueText(valueId),
-              classId ? classRecordAttribute(project, f.featureId, classId) : sourceRecordAttribute(project, f.featureId),
-              status,
-            ];
-            const valueId = r.values[f.featureId];
-            const classRows = Object.entries(r.classValues ?? {})
-              .filter(([, values]) => values[f.featureId])
-              .sort(([a], [b]) => (a < b ? -1 : 1))
-              .map(([classId, values]) => {
-                const id = values[f.featureId]!;
-                const allowed = f.classValueIds[classId];
-                const status = !allowed
-                  ? 'Ignored, class not selected or not using the feature'
-                  : !isRecordValueAllowed(allowed, id)
-                    ? 'Not allowed by ETIM in the class'
-                    : 'Class value';
-                return row(classId, id, status);
-              });
-            const status = !valueId
-              ? isRecordValueSkipped(r, f.featureId)
-                ? 'Skipped'
-                : 'Not mapped'
-              : isRecordValueAllowed(f.valueIds, valueId)
-                ? 'Mapped'
-                : 'Not allowed by ETIM';
-            return [row(undefined, valueId, status), ...classRows];
-          }),
-        ),
-      ),
-    ],
-  };
+  const recordSheet = sourceRecordsSheet(release, project, sourceEntities);
 
   const ruleSheet: Table = {
     name: 'Rules',

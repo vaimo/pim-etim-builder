@@ -69,6 +69,11 @@ export function zipFileName(project: Project): string {
   return `${projectFileName(project).replace(/\.etim-project\.json$/, '')}-etim-export.zip`;
 }
 
+/** Name of a step's Excel file, `essve.etim-project.json` and `feature-mapping` give `essve-feature-mapping.xlsx`. */
+export function stepFileName(project: Project, part: string): string {
+  return `${projectFileName(project).replace(/\.etim-project\.json$/, '')}-${part}.xlsx`;
+}
+
 /** Last part of a path, the name a single file is downloaded as. */
 export function baseName(path: string): string {
   return path.slice(path.lastIndexOf('/') + 1);

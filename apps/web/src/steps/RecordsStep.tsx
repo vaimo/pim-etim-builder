@@ -25,6 +25,8 @@ import { exceptionsText, filledText, isComplete, providesText, recordsText } fro
 import { sourceEntitySummaries, type SourceEntityFeatureSummary } from '../review/reviewRows.js';
 import { LogicalSources } from './LogicalSources.js';
 import { SubStep } from '../components/SubStep.js';
+import { SourceValuesDownload } from '../components/SourceValuesDownload.js';
+import { StepActions } from '../components/StepActions.js';
 import { GenerateIssues } from '../components/features/GenerateIssues.js';
 import { ToggleIcon } from '../components/ToggleIcon.js';
 import { SUB_STEPS } from '../workspace/sections.js';
@@ -49,6 +51,9 @@ export function RecordsStep() {
 
   return (
     <Stack gap="lg" mt="md">
+      <StepActions>
+        <SourceValuesDownload release={release} project={project} />
+      </StepActions>
       <SubStep
         step={SUB_STEPS.records}
         description={

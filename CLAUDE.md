@@ -183,6 +183,7 @@ Run `pnpm test` and `pnpm typecheck` before committing.
 - XLSX via a small writer on `fflate` (`writeXlsx`), no spreadsheet library in the bundle.
 - YAML via a small writer (`export/yaml.ts`), the `yaml` package is only used in tests. Block style, no anchors/aliases, anything but simple codes double quoted, YAML 1.1 words like `yes` quoted, so PHP parsers read strings as strings.
 - No attribute options file: ETIM values are reference entity records, there are no select attributes.
+- Step Excel files (`export/stepSheets.ts`), for review with the client: 4.2 `featureMappingTables` (sheet Feature mapping, `<project>-feature-mapping.xlsx`, Export to Excel button next to the 4.2 title), 5.1 and 5.2 together `sourceValueTables` (sheets Source records, shared with the mapping report, and Source values with the yes values of L sources, `<project>-source-values.xlsx`, one button right of the step 5 heading, through `StepActions` in `apps/web/src/components`). Export only, not read back.
 
 ## Source attributes (`packages/core/src/source`)
 - `parseAkeneoAttributeExport(bytes, fileName)` reads an Akeneo attribute export, XLSX (small regex based reader, `readXlsxRows`, works in workers) or CSV. Columns `code` (required), `type`, `group`, `reference_data_name`, `label-<locale>`.

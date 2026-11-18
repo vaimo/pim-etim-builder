@@ -1,4 +1,12 @@
-import { collectProjectFeatures, createProject, generateAttributes, generateRules, sourceEntityFor, type FeatureKey } from '@vaimo-pim-etim-builder/core';
+import {
+  collectProjectFeatures,
+  createProject,
+  featureMappingTables,
+  generateAttributes,
+  generateRules,
+  sourceEntityFor,
+  type FeatureKey,
+} from '@vaimo-pim-etim-builder/core';
 import { Button, Group, Modal, Stack, Text } from '@mantine/core';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { GenerateIssues } from '../components/features/GenerateIssues.js';
@@ -10,6 +18,8 @@ import { mappingRows, orphanMappings } from '../mapping/sourceMappings.js';
 import { useAppDispatch, useAppState } from '../state/AppStateContext.js';
 import { displayLocale } from '../state/appState.js';
 import { CodeList } from '../components/CodeList.js';
+import { ExcelDownload } from '../components/ExcelDownload.js';
+import { stepFileName } from '../export/exportFiles.js';
 import { StepSummary, SummaryRow } from '../components/StepSummary.js';
 import { SubStep } from '../components/SubStep.js';
 import { SUB_STEPS } from '../workspace/sections.js';
@@ -93,6 +103,14 @@ export function MappingStep() {
       <SubStep
         step={SUB_STEPS.mapFeatures}
         description="Pick the client (data model) attribute that provides each ETIM feature. Mapped features become read only and are filled by Akeneo rules, one rule per source attribute. Unmapped features are enriched by hand, skip the ones you decided not to map so they no longer count as open."
+        aside={
+          <ExcelDownload
+            fileName={stepFileName(project, 'feature-mapping')}
+            tables={() => featureMappingTables(release, project)}
+            tooltip="Every feature with its mapping status and source attribute, for review with the client"
+            testId="export-feature-mapping"
+          />
+        }
         testId="sub-step-map-features"
       >
         {orphans.length > 0 && (

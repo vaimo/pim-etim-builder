@@ -94,3 +94,6 @@ export const KEEP_CASE = { label: { textTransform: 'none' } } as const;
  * shown in the text color so the control looks active, not disabled. Use as `classNames={{ input: DEFAULT_VALUE_INPUT }}`.
  */
 export const DEFAULT_VALUE_INPUT = 'default-value-input';
+
+/** For a value input that is empty but needs a value (open work): warning border and placeholder. Use as `classNames={{ input: UNMAPPED_VALUE_INPUT }}`. */
+export const UNMAPPED_VALUE_INPUT = 'unmapped-value-input';

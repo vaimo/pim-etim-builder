@@ -19,7 +19,7 @@ import { codeError } from '../mapping/sourceMappings.js';
 import type { Dispatch } from 'react';
 import { useAppDispatch, useAppState } from '../state/AppStateContext.js';
 import { displayLocale, type AppAction } from '../state/appState.js';
-import { DEFAULT_VALUE_INPUT, TEXT_COLORS } from '../theme.js';
+import { DEFAULT_VALUE_INPUT, TEXT_COLORS, UNMAPPED_VALUE_INPUT } from '../theme.js';
 import { RecordAttributeTable } from '../components/RecordAttributeTable.js';
 import { exceptionsText, filledText, isComplete, providesText, recordsText } from '../format/sourceEntityText.js';
 import { sourceEntitySummaries, type SourceEntityFeatureSummary } from '../review/reviewRows.js';
@@ -429,13 +429,16 @@ interface ValueSelectProps {
   placeholder: string;
   /** The placeholder names what an empty value means, shown like a value. */
   placeholderIsDefault?: boolean;
+  /** Empty and not skipped: open work, highlighted. */
+  unmapped?: boolean;
   onChange: (v: string | null) => void;
   testId: string;
 }
 
 /** An ETIM value from the allowed list, or typed by hand when ETIM lists none. A value outside the list is shown as an error. */
-function ValueSelect({ value, allowed, placeholder, placeholderIsDefault, onChange, testId }: ValueSelectProps) {
-  if (allowed.length === 0) return <FreeValueInput value={value} onChange={onChange} testId={testId} />;
+function ValueSelect({ value, allowed, placeholder, placeholderIsDefault, unmapped, onChange, testId }: ValueSelectProps) {
+  if (allowed.length === 0) return <FreeValueInput value={value} unmapped={unmapped === true} onChange={onChange} testId={testId} />;
+  const inputClass = [placeholderIsDefault && DEFAULT_VALUE_INPUT, unmapped && !value && UNMAPPED_VALUE_INPUT].filter(Boolean).join(' ');
   const data = value && !allowed.some((o) => o.value === value) ? [...allowed, { value, label: `${value} (not allowed by ETIM)` }] : allowed;
   return (
     <Select
@@ -443,7 +446,7 @@ function ValueSelect({ value, allowed, placeholder, placeholderIsDefault, onChan
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      {...(placeholderIsDefault ? { classNames: { input: DEFAULT_VALUE_INPUT } } : {})}
+      {...(inputClass ? { classNames: { input: inputClass } } : {})}
       searchable
       clearable
       size="xs"
@@ -490,6 +493,7 @@ function FeatureValues({ record, feature, allowed, byClass, classLabels, onChang
           allowed={allowed}
           placeholder={isRecordValueSkipped(record, featureId) ? 'Skipped, no ETIM value' : 'Not mapped'}
           placeholderIsDefault
+          unmapped={!isRecordValueSkipped(record, featureId)}
           onChange={(v) => onChange(undefined, v)}
           testId={`value-${record.code}-${featureId}`}
         />
@@ -506,6 +510,10 @@ function FeatureValues({ record, feature, allowed, byClass, classLabels, onChang
         placeholder="Add exception"
         searchable
         size="xs"
+        variant="unstyled"
+        mt={-4}
+        rightSection={null}
+        styles={{ input: { paddingInline: 2, height: 22, minHeight: 22, lineHeight: '22px', cursor: 'pointer' } }}
         comboboxProps={{ withinPortal: true, width: 'max-content' }}
         data-testid={`${testId}-add`}
       />
@@ -594,7 +602,17 @@ function ValueLabel({ text, tooltip, color, fw }: { text: string; tooltip?: stri
 }
 
 /** For features where ETIM lists no allowed values: a value id typed by hand, stored once it looks like `EV000072`. */
-function FreeValueInput({ value, onChange, testId }: { value: string | null; onChange: (v: string | null) => void; testId: string }) {
+function FreeValueInput({
+  value,
+  unmapped,
+  onChange,
+  testId,
+}: {
+  value: string | null;
+  unmapped?: boolean;
+  onChange: (v: string | null) => void;
+  testId: string;
+}) {
   const [draft, setDraft] = useState(value ?? '');
   const normalized = draft.trim().toUpperCase();
   const error = normalized !== '' && !VALUE_ID.test(normalized) ? 'Use a value id like EV000072' : undefined;
@@ -602,6 +620,7 @@ function FreeValueInput({ value, onChange, testId }: { value: string | null; onC
     <TextInput
       size="xs"
       placeholder="EV000000"
+      {...(unmapped && !value ? { classNames: { input: UNMAPPED_VALUE_INPUT } } : {})}
       value={draft}
       error={error}
       onChange={(e) => setDraft(e.currentTarget.value)}

@@ -549,6 +549,7 @@ function FeatureValues({ record, feature, allowed, byClass, classLabels, onChang
               value={valueId}
               allowed={byClass[classId] ?? []}
               placeholder="Remove exception"
+              unmapped
               onChange={(v) => onChange(classId, v)}
               testId={`${testId}-${classId}`}
             />
@@ -564,6 +565,7 @@ function FeatureValues({ record, feature, allowed, byClass, classLabels, onChang
                 value={null}
                 allowed={byClass[adding] ?? []}
                 placeholder={`Value in ${adding}`}
+                unmapped
                 onChange={(v) => {
                   if (v) onChange(adding, v);
                   setAdding(null);

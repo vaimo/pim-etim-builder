@@ -47,7 +47,7 @@ export function FeaturesStep() {
     [generated],
   );
 
-  if (!release || !collected || !generated) return <Text mt="md">Import an ETIM export first.</Text>;
+  if (!release || !collected || !generated) return <Text mt="md">Load an ETIM release first.</Text>;
 
   const byEtimType = countBy(rows, (r) => r.type);
   const byAttrType = countBy(generated.attributes, (a) => a.type);

@@ -101,7 +101,7 @@ export function ReviewStep() {
     [],
   );
 
-  if (!release || !model) return <Text mt="md">Import an ETIM export first.</Text>;
+  if (!release || !model) return <Text mt="md">Load an ETIM release first.</Text>;
 
   const errors = model.issues.filter((i) => i.severity === 'error').length;
   const warnings = model.issues.length - errors;

@@ -50,7 +50,7 @@ export function ClassesStep() {
   );
   const unmatched = useMemo(() => unmatchedSearchTerms(rows, deferredSearch), [rows, deferredSearch]);
 
-  if (!release) return <Text mt="md">Import an ETIM export first.</Text>;
+  if (!release) return <Text mt="md">Load an ETIM release first.</Text>;
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);

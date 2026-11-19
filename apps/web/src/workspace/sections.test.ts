@@ -53,7 +53,7 @@ describe('guardReason', () => {
 
   it('needs a ready release after Import', () => {
     for (let i = 1; i < SECTIONS.length; i++) {
-      expect(guardReason(i, { ready: false, hasClasses: true })).toBe('Import an ETIM export without errors first');
+      expect(guardReason(i, { ready: false, hasClasses: true })).toBe('Load an ETIM release without errors first');
     }
   });
 
@@ -80,8 +80,8 @@ describe('sectionStatuses', () => {
 
   it('shows the guard reason for blocked sections', () => {
     const s = sectionStatuses(input({ ready: false, hasClasses: false, imported: false }));
-    expect(s[0]).toEqual({ text: 'No ETIM export yet', tone: 'muted' });
-    expect(s.slice(1).every((x) => x.text === 'Import an ETIM export without errors first' && x.tone === 'muted')).toBe(true);
+    expect(s[0]).toEqual({ text: 'No ETIM release yet', tone: 'muted' });
+    expect(s.slice(1).every((x) => x.text === 'Load an ETIM release without errors first' && x.tone === 'muted')).toBe(true);
   });
 
   it('reports import errors', () => {

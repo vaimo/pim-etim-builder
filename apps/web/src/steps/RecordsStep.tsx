@@ -47,7 +47,7 @@ export function RecordsStep() {
   const locale = displayLocale(state);
   const collected = useMemo(() => (release ? collectSourceEntities(release, project) : undefined), [release, project]);
 
-  if (!release || !collected) return <Text mt="md">Import an ETIM export first.</Text>;
+  if (!release || !collected) return <Text mt="md">Load an ETIM release first.</Text>;
 
   return (
     <Stack gap="lg" mt="md">

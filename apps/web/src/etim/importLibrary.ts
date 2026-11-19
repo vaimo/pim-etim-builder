@@ -59,12 +59,12 @@ const sameSource = (a: EtimSource | undefined, b: EtimSource | undefined) =>
 export function planEtimReload(wanted: EtimSource | undefined, loaded: EtimSource | undefined, library: EtimLibrary): EtimReload {
   if (!wanted || sameSource(wanted, loaded)) return { kind: 'none' };
   const locales = wanted.locales.join(', ');
-  if (!wanted.library) return { kind: 'manual', reason: `The project uses an uploaded ETIM export (${locales}). Import it again to continue.` };
+  if (!wanted.library) return { kind: 'manual', reason: `The project uses an uploaded ETIM release (${locales}). Load it again to continue.` };
   const release = library.releases.find((r) => r.name === wanted.library);
   const [baseLocale, ...rest] = wanted.locales;
   const base = release?.locales.find((l) => l.locale === baseLocale);
   if (!release || !base) {
-    return { kind: 'manual', reason: `The project uses ETIM export ${wanted.library} (${locales}), which is not in the app's etim-files folder. Import it to continue.` };
+    return { kind: 'manual', reason: `The project uses ETIM release ${wanted.library} (${locales}), which is not in the app's etim-files folder. Load it to continue.` };
   }
   const translations = rest.flatMap((l) => release.locales.filter((x) => x.locale === l));
   const missing = rest.filter((l) => !release.locales.some((x) => x.locale === l));

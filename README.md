@@ -29,7 +29,7 @@ The ETIM Builder aims to support building that data model, with a guided app. It
 
 Work through the numbered steps in the sidebar. You can open them in any order. The **Tasks** box on the right shows what is still open on each step.
 
-1. **Setup ETIM versions.** Pick a pre-loaded ETIM release or upload an ETIM export, and add a second language if needed.
+1. **Setup ETIM versions.** Load a pre-loaded ETIM release or load one from files, and add a second language if needed.
 2. **Select Classes and Locales.** Choose the project locales and the ETIM classes the client uses.
 3. **Configure Features.** Set the project defaults: number or metric, and how ranges are stored. Map ETIM units to Akeneo measurement units, and override single features where needed.
 4. **Map features to source attributes.** Upload the client's Akeneo attribute export, then pick the client attribute that provides each ETIM feature. Features you decide not to map can be marked as skipped.

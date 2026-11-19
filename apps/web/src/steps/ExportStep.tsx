@@ -84,7 +84,7 @@ export function ExportStep() {
   const model = useGeneratedModel(release, project);
   const entities = useMemo(() => (model && release ? sourceEntitySummaries(release, project, model.sourceEntities, locale) : []), [model, release, project, locale]);
 
-  if (!release) return <Text mt="md">Import an ETIM export first.</Text>;
+  if (!release) return <Text mt="md">Load an ETIM release first.</Text>;
 
   const zipName = zipFileName(project);
   const totalSize = groups.reduce((sum, g) => sum + g.files.reduce((s, f) => s + f.size, 0), 0);

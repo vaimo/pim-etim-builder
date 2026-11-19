@@ -42,7 +42,7 @@ export function EtimLibraryForm({ library, busy, onSubmit }: Props) {
           {n === 1 ? '1 ETIM release is ready to use' : `${n} ETIM releases are ready to use`}
         </Text>
         <Text size="sm" c="dimmed">
-          Start by picking {n === 1 ? 'it' : 'one of them'}, the files are already in the app.
+          Start by loading {n === 1 ? 'it' : 'one of them'}, the files are already in the app.
         </Text>
       </div>
       <SimpleGrid cols={{ base: 1, xs: 2, md: 3 }} spacing="sm" role="radiogroup" aria-label="ETIM release">

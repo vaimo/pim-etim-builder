@@ -89,7 +89,7 @@ export function ImportStep() {
       mode="base"
       busy={busy === 'base'}
       existingLocales={release?.locales ?? []}
-      submitLabel="Import ETIM export"
+      submitLabel="Load ETIM release"
       onSubmit={(locale, files) => void importBase(locale, files)}
     />
   );
@@ -106,10 +106,10 @@ export function ImportStep() {
         step={SUB_STEPS.etimVersion}
         description={
           release
-            ? 'The ETIM export the project is built on, with the languages added to it.'
+            ? 'The ETIM release the project is built on, with the languages added to it.'
             : hasLibrary
-              ? 'Pick the ETIM release the project is built on.'
-              : 'Load the ETIM export the project is built on.'
+              ? 'Load the ETIM release the project is built on.'
+              : 'Load the ETIM release the project is built on.'
         }
         aside={
           release &&
@@ -123,8 +123,8 @@ export function ImportStep() {
       >
         {release && <ReleaseSummary release={release} />}
         {baseErrors && (
-          <Alert color="red" title="The ETIM export has errors">
-            Fix the files and import them again to continue. Missing tables or columns are errors.
+          <Alert color="red" title="The ETIM release has errors">
+            Fix the files and load them again to continue. Missing tables or columns are errors.
           </Alert>
         )}
         {release && <MissingClassesAlert />}
@@ -133,7 +133,7 @@ export function ImportStep() {
             <Group justify="space-between" mb={entry.issues.length > 0 ? 'xs' : 0}>
               <Group gap="xs">
                 <Badge variant="outline" styles={KEEP_CASE}>{entry.locale}</Badge>
-                <Text fw={600}>{entry.kind === 'base' ? 'ETIM export' : 'Translation'}</Text>
+                <Text fw={600}>{entry.kind === 'base' ? 'ETIM release' : 'Translation'}</Text>
                 <Text size="sm" c="dimmed">
                   {entry.fileNames.length} files
                 </Text>
@@ -176,7 +176,7 @@ export function ImportStep() {
           </Paper>
         )}
         {(!release || showReplace) && hasLibrary && (
-          <CollapsibleBox title="Or upload an ETIM export" defaultOpen={false} testId="etim-upload">
+          <CollapsibleBox title="Or load an ETIM release from files" defaultOpen={false} testId="etim-upload">
             {upload}
           </CollapsibleBox>
         )}

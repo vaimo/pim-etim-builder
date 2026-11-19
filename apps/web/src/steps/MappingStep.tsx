@@ -81,7 +81,7 @@ export function MappingStep() {
   const onSkip = useCallback((key: FeatureKey, skip: boolean) => dispatch({ type: 'setFeatureSkipped', key, skipped: skip }), [dispatch]);
   const entityFor = useCallback((source: string) => sourceEntityFor(project, source), [project]);
 
-  if (!release || !collected || !generated) return <Text mt="md">Import an ETIM export first.</Text>;
+  if (!release || !collected || !generated) return <Text mt="md">Load an ETIM release first.</Text>;
 
   const mapped = rows.filter((r) => r.status === 'mapped').length;
   const skipped = rows.filter((r) => r.status === 'skipped').length;

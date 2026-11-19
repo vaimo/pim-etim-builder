@@ -1,6 +1,6 @@
 # Pre-loaded ETIM exports
 
-ETIM exports placed here can be picked on the Import step instead of uploading files.
+ETIM exports placed here can be loaded on step 1 without picking files.
 
 ```
 etim-files/

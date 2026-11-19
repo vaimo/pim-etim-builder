@@ -10,7 +10,7 @@ import {
 
 /** The numbered steps of the workspace, opened from the sidebar in any order. */
 export const SECTIONS = [
-  { id: 'import', label: 'Setup ETIM versions', description: 'Upload ETIM export and translations' },
+  { id: 'import', label: 'Setup ETIM versions', description: 'Load an ETIM release and translations' },
   { id: 'classes', label: 'Select Classes and Locales', description: 'Select classes and locales' },
   { id: 'features', label: 'Configure Features', description: 'Types, units, ranges' },
   { id: 'mapping', label: 'Mapping: Feature to Source attribute', description: 'Client source attributes' },
@@ -58,7 +58,7 @@ export interface GuardInput {
  */
 export function guardReason(index: number, { ready, hasClasses }: GuardInput): string | undefined {
   if (index <= 0) return undefined;
-  if (!ready) return 'Import an ETIM export without errors first';
+  if (!ready) return 'Load an ETIM release without errors first';
   if (index === 1) return undefined;
   if (!hasClasses) return 'Select at least one class first';
   return undefined;
@@ -107,7 +107,7 @@ export interface StatusInput extends GuardInput {
 const plural = (n: number, one: string, many = `${one}s`) => `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 
 function importStatus(s: StatusInput): SectionStatus {
-  if (!s.imported) return { text: 'No ETIM export yet', tone: 'muted' };
+  if (!s.imported) return { text: 'No ETIM release yet', tone: 'muted' };
   if (!s.ready) return { text: s.importErrors > 0 ? plural(s.importErrors, 'import error') : 'Not ready', tone: 'error' };
   return { text: `Ready, ${plural(s.localeCount, 'locale')}`, tone: 'ok' };
 }

@@ -19,7 +19,7 @@ export interface StepWork {
 export interface TaskInput {
   /** Base import loaded without errors. */
   ready: boolean;
-  /** Pre-loaded ETIM releases the consultant can pick from. */
+  /** Pre-loaded ETIM releases the consultant can load. */
   libraryReleases: number;
   selectedClasses: number;
   projectLocales: number;
@@ -55,14 +55,12 @@ export function stepWork(id: SectionId, s: TaskInput): StepWork {
   switch (id) {
     case 'import':
       return work([
-        s.libraryReleases > 0
-          ? {
-              subStep: SUB_STEPS.etimVersion.number,
-              label: 'Pick an ETIM release, or load an export',
-              done: s.ready,
-              ...(s.ready ? {} : { detail: `${count(s.libraryReleases)} pre-loaded` }),
-            }
-          : { subStep: SUB_STEPS.etimVersion.number, label: 'Load an ETIM export without errors', done: s.ready },
+        {
+          subStep: SUB_STEPS.etimVersion.number,
+          label: 'Load an ETIM release',
+          done: s.ready,
+          ...(!s.ready && s.libraryReleases > 0 ? { detail: `${count(s.libraryReleases)} pre-loaded` } : {}),
+        },
       ]);
     case 'classes':
       return work([

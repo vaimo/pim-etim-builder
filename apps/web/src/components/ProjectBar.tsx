@@ -40,7 +40,7 @@ export function ProjectBar({ onNotice }: { onNotice: (notice: ProjectNotice) => 
     // The project file holds no ETIM data, import the export it was built on.
     const plan = planEtimReload(result.project.etimSource, loaded, result.project.etimSource?.library ? await fetchEtimLibrary() : { releases: [] });
     if (plan.kind === 'none') {
-      const hint = state.release || result.project.etimSource ? '' : ' The file does not say which ETIM export it uses, import one to continue.';
+      const hint = state.release || result.project.etimSource ? '' : ' The file does not say which ETIM release it uses, load one to continue.';
       onNotice({ kind: 'loaded', color: hint ? 'orange' : 'green', message: `Loaded project ${name}.${hint}` });
       return;
     }
@@ -49,18 +49,18 @@ export function ProjectBar({ onNotice }: { onNotice: (notice: ProjectNotice) => 
       return;
     }
     const locales = [plan.base, ...plan.translations].map((l) => l.locale).join(', ');
-    onNotice({ kind: 'importing', color: 'blue', message: `Loaded project ${name}, importing ETIM export ${plan.release} (${locales})...` });
+    onNotice({ kind: 'importing', color: 'blue', message: `Loaded project ${name}, loading ETIM release ${plan.release} (${locales})...` });
     try {
       const ok = await importLibraryRelease(dispatch, plan.release, plan.base, plan.translations);
       const missing = plan.missing.length > 0 ? ` ${plan.missing.join(', ')} ${plan.missing.length === 1 ? 'is' : 'are'} not in the etim-files folder, add ${plan.missing.length === 1 ? 'it' : 'them'} in step 1, Setup ETIM versions.` : '';
       onNotice(
         ok
-          ? { kind: 'loaded', color: missing ? 'orange' : 'green', message: `Loaded project ${name} with ETIM export ${plan.release} (${locales}).${missing}` }
-          : { kind: 'loaded', color: 'red', message: `Loaded project ${name}, but ETIM export ${plan.release} has errors. See step 1, Setup ETIM versions.` },
+          ? { kind: 'loaded', color: missing ? 'orange' : 'green', message: `Loaded project ${name} with ETIM release ${plan.release} (${locales}).${missing}` }
+          : { kind: 'loaded', color: 'red', message: `Loaded project ${name}, but ETIM release ${plan.release} has errors. See step 1, Setup ETIM versions.` },
       );
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
-      onNotice({ kind: 'loaded', color: 'red', message: `Loaded project ${name}, but ETIM export ${plan.release} could not be imported. ${reason}` });
+      onNotice({ kind: 'loaded', color: 'red', message: `Loaded project ${name}, but ETIM release ${plan.release} could not be loaded. ${reason}` });
     }
   }
 

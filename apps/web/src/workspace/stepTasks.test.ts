@@ -3,6 +3,7 @@ import { openTasks, stepWork, type TaskInput } from './stepTasks.js';
 
 const input = (patch: Partial<TaskInput> = {}): TaskInput => ({
   ready: true,
+  libraryReleases: 0,
   selectedClasses: 3,
   projectLocales: 2,
   metricUnits: 2,
@@ -28,6 +29,9 @@ const input = (patch: Partial<TaskInput> = {}): TaskInput => ({
 describe('stepWork', () => {
   it('marks done and open work per step', () => {
     expect(stepWork('import', input()).tasks).toEqual([{ subStep: '1.1', label: 'Load an ETIM export without errors', done: true }]);
+    expect(stepWork('import', input({ ready: false, libraryReleases: 2 })).tasks).toEqual([
+      { subStep: '1.1', label: 'Pick an ETIM release, or load an export', done: false, detail: '2 pre-loaded' },
+    ]);
     expect(stepWork('features', input()).tasks).toEqual([
       { subStep: '3.2', label: 'Map ETIM units to Akeneo measurement units', done: false, detail: '1 open' },
     ]);

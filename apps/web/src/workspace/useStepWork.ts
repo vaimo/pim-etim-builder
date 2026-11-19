@@ -8,6 +8,7 @@ import {
 } from '@vaimo-pim-etim-builder/core';
 import { useDeferredValue, useMemo } from 'react';
 import { metricUnitRows } from '../features/featureRows.js';
+import { useEtimLibrary } from '../etim/useEtimLibrary.js';
 import { useGeneratedModel } from '../review/generated.js';
 import { displayLocale, hasSelectedClasses, isReleaseReady, type AppState } from '../state/appState.js';
 import { countMapped, countSourcesWithoutEntity, recordCounts, type SectionId } from './sections.js';
@@ -23,6 +24,7 @@ export function useStepWork(state: AppState, id: SectionId): StepWork {
   const project = useDeferredValue(state.project);
   const { release } = state;
   const locale = displayLocale(state);
+  const libraryReleases = useEtimLibrary()?.releases.length ?? 0;
 
   const features = useMemo(() => (release ? collectProjectFeatures(release, project).features : []), [release, project]);
   const entities = useMemo(
@@ -42,6 +44,7 @@ export function useStepWork(state: AppState, id: SectionId): StepWork {
     const records = recordCounts(entities);
     return stepWork(id, {
       ready,
+      libraryReleases,
       selectedClasses: release ? project.classIds.filter((c) => release.classes[c] !== undefined).length : 0,
       projectLocales: project.locales.length,
       metricUnits: units.length,
@@ -62,5 +65,5 @@ export function useStepWork(state: AppState, id: SectionId): StepWork {
       generatorWarnings: model && errors !== undefined ? model.issues.length - errors : undefined,
       akeneoSteps: id === 'export' ? akeneoManualSteps(project, entities) : [],
     });
-  }, [id, ready, release, features, project, locale, entities, logical, model]);
+  }, [id, ready, libraryReleases, release, features, project, locale, entities, logical, model]);
 }

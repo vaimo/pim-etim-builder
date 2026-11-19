@@ -19,6 +19,8 @@ export interface StepWork {
 export interface TaskInput {
   /** Base import loaded without errors. */
   ready: boolean;
+  /** Pre-loaded ETIM releases the consultant can pick from. */
+  libraryReleases: number;
   selectedClasses: number;
   projectLocales: number;
   /** ETIM units of metric attributes, and how many have no Akeneo measurement unit. */
@@ -52,7 +54,16 @@ export function stepWork(id: SectionId, s: TaskInput): StepWork {
   const work = (tasks: StepTask[], akeneoSteps: string[] = []): StepWork => ({ tasks, akeneoSteps });
   switch (id) {
     case 'import':
-      return work([{ subStep: SUB_STEPS.etimVersion.number, label: 'Load an ETIM export without errors', done: s.ready }]);
+      return work([
+        s.libraryReleases > 0
+          ? {
+              subStep: SUB_STEPS.etimVersion.number,
+              label: 'Pick an ETIM release, or load an export',
+              done: s.ready,
+              ...(s.ready ? {} : { detail: `${count(s.libraryReleases)} pre-loaded` }),
+            }
+          : { subStep: SUB_STEPS.etimVersion.number, label: 'Load an ETIM export without errors', done: s.ready },
+      ]);
     case 'classes':
       return work([
         { subStep: SUB_STEPS.locales.number, label: 'Pick the project locales', done: s.projectLocales > 0, detail: `${count(s.projectLocales)} selected` },

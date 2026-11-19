@@ -3,6 +3,7 @@ import { SubStep } from '../components/SubStep.js';
 import { SUB_STEPS } from '../workspace/sections.js';
 import type { EtimTableName } from '@vaimo-pim-etim-builder/core';
 import { useState } from 'react';
+import { CollapsibleBox } from '../components/CollapsibleBox.js';
 import { EtimLibraryForm } from '../components/EtimLibraryForm.js';
 import { EtimUploadForm, type TableFiles } from '../components/EtimUploadForm.js';
 import { IssueCounts, IssueList } from '../components/IssueList.js';
@@ -12,6 +13,7 @@ import type { EtimJobFile } from '../etim/etimJob.js';
 import { importLibraryRelease } from '../etim/importLibrary.js';
 import type { LibraryLocale } from '../etim/library.js';
 import { runEtimJob } from '../etim/runEtimJob.js';
+import { useEtimLibrary } from '../etim/useEtimLibrary.js';
 import { useAppDispatch, useAppState } from '../state/AppStateContext.js';
 import { isReleaseReady } from '../state/appState.js';
 import { KEEP_CASE } from '../theme.js';
@@ -29,6 +31,8 @@ export function ImportStep() {
   const [busy, setBusy] = useState<'base' | 'translation' | undefined>();
   const [failure, setFailure] = useState<string | undefined>();
   const [showReplace, setShowReplace] = useState(false);
+  const library = useEtimLibrary();
+  const hasLibrary = (library?.releases.length ?? 0) > 0;
   // Remounts the forms after a successful upload so they start empty.
   const [formKey, setFormKey] = useState(0);
 
@@ -79,6 +83,16 @@ export function ImportStep() {
   }
 
   const baseErrors = release !== undefined && !isReleaseReady(state);
+  const upload = (
+    <EtimUploadForm
+      key={`base-${formKey}`}
+      mode="base"
+      busy={busy === 'base'}
+      existingLocales={release?.locales ?? []}
+      submitLabel="Import ETIM export"
+      onSubmit={(locale, files) => void importBase(locale, files)}
+    />
+  );
 
   return (
     <Stack gap="lg" mt="md">
@@ -93,7 +107,9 @@ export function ImportStep() {
         description={
           release
             ? 'The ETIM export the project is built on, with the languages added to it.'
-            : 'Load the ETIM export the project is built on.'
+            : hasLibrary
+              ? 'Pick the ETIM release the project is built on.'
+              : 'Load the ETIM export the project is built on.'
         }
         aside={
           release &&
@@ -133,7 +149,11 @@ export function ImportStep() {
           </Paper>
         ))}
         {(!release || showReplace) && (
-          <Paper withBorder p="md">
+          <Paper
+            withBorder
+            p="md"
+            style={!release && hasLibrary ? { borderColor: 'var(--mantine-primary-color-filled)', borderWidth: 2 } : undefined}
+          >
             {release && (
               <>
                 <Text fw={600} mb={4}>
@@ -144,20 +164,21 @@ export function ImportStep() {
                 </Text>
               </>
             )}
-            <EtimLibraryForm
-              key={`library-${formKey}`}
-              busy={busy === 'base'}
-              onSubmit={(name, base, translations) => void importLibrary(name, base, translations)}
-            />
-            <EtimUploadForm
-              key={`base-${formKey}`}
-              mode="base"
-              busy={busy === 'base'}
-              existingLocales={release?.locales ?? []}
-              submitLabel="Import ETIM export"
-              onSubmit={(locale, files) => void importBase(locale, files)}
-            />
+            {library && hasLibrary && (
+              <EtimLibraryForm
+                key={`library-${formKey}`}
+                library={library}
+                busy={busy === 'base'}
+                onSubmit={(name, base, translations) => void importLibrary(name, base, translations)}
+              />
+            )}
+            {library && !hasLibrary && upload}
           </Paper>
+        )}
+        {(!release || showReplace) && hasLibrary && (
+          <CollapsibleBox title="Or upload an ETIM export" defaultOpen={false} testId="etim-upload">
+            {upload}
+          </CollapsibleBox>
         )}
       </SubStep>
 
